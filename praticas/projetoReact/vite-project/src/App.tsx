@@ -1,9 +1,17 @@
-function App()
-{
-  <>
-<h1>Bem vindo a primeira aula de ReactJs</h1>
-<h2>Nossa aula de introdução</h2>
-</>
-}
+import "./styles/theme.css"
+import "./styles/globals.css"
+import { Heading } from "./Components/Heading"
+import { Timer } from 'lucide-react'; // Importando o ícone
 
-export default App
+export function App(){
+  return (
+    <>
+   <Heading>
+    Histórico
+    <button>
+      <Timer/>
+      </button>
+   </Heading>
+   </>
+  );
+}
