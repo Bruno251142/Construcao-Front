@@ -21,7 +21,32 @@ body {
     'Open Sans',
     'Helvetica Neue',
     sans-serif;
-  font-size: 1.6rem; /* 16px */
-  background: var(--gray-900);
+
+  font-size: 1.6rem;
+  
+  background: radial-gradient(circle at top, #0F172A, #020617);
+
   color: var(--text-default);
+}
+
+.container-fluid {
+  width: 100%;
+}
+
+/* Centralizando e empilhando os itens do formulário */
+.form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+/* O mesmo alinhamento para o conteúdo interno de cada "linha" */
+.formRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2.4rem;
 }
