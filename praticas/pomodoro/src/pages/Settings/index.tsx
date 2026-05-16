@@ -8,6 +8,7 @@ import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
 import { useEffect, useRef } from 'react';
 import { showMessage } from '../../adapters/showMessage';
 import { TaskActionTypes } from '../../contexts/TaskContext/taskActions';
+import { updateSettings } from '../../services/api';
 
 export function Settings() {
   const { state, dispatch } = useTaskContext();
@@ -19,8 +20,7 @@ export function Settings() {
     document.title = 'Configurações - Chronos Pomodoro';
   }, []);
 
-
-  function handleSaveSettings(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSaveSettings(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     showMessage.dismiss();
 
@@ -47,21 +47,20 @@ export function Settings() {
     }
 
     if (formErrors.length > 0) {
-      formErrors.forEach(error => {
-        showMessage.error(error);
-      });
+      formErrors.forEach(error => showMessage.error(error));
       return;
     }
 
-    dispatch({
-      type: TaskActionTypes.CHANGE_SETTINGS,
-      payload: {
-        workTime,
-        shortBreakTime,
-        longBreakTime,
-      },
-    });
-    showMessage.success('Configurações salvas');
+    try {
+      await updateSettings({ workTime, shortBreakTime, longBreakTime });
+      dispatch({
+        type: TaskActionTypes.CHANGE_SETTINGS,
+        payload: { workTime, shortBreakTime, longBreakTime },
+      });
+      showMessage.success('Configurações salvas');
+    } catch {
+      showMessage.error('Erro ao salvar configurações. Tente novamente.');
+    }
   }
 
   return (
@@ -72,7 +71,7 @@ export function Settings() {
 
       <Container>
         <p style={{ textAlign: 'center' }}>
-          Modifique as configurações para tempo de foco, descanso curso e
+          Modifique as configurações para tempo de foco, descanso curto e
           descanso longo.
         </p>
       </Container>

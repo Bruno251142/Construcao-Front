@@ -6,6 +6,7 @@ import { TimerWorkerManager } from '../../workers/TimerWorkerManager';
 import { TaskActionTypes } from './taskActions';
 import { loadBeep } from '../../utils/loadBeep';
 import type { TaskStateModel } from '../../models/TaskStateModel';
+import { getSettings, getTasks, completeTask } from '../../services/api';
 
 type TaskContextProviderProps = {
   children: React.ReactNode;
@@ -28,8 +29,45 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
   });
 
   const playBeepRef = useRef<ReturnType<typeof loadBeep> | null>(null);
-
   const worker = TimerWorkerManager.getInstance();
+
+  // Hidratação inicial: busca settings e tasks da API
+  useEffect(() => {
+    async function hydrate() {
+      try {
+        const [settings, tasks] = await Promise.all([getSettings(), getTasks()]);
+        dispatch({
+          type: TaskActionTypes.HYDRATE_TASKS,
+          payload: {
+            tasks: tasks.map((t: any) => ({
+              ...t,
+              startDate: Number(t.startDate),
+              completeDate: t.completeDate ? Number(t.completeDate) : undefined,
+              interruptDate: t.interruptDate ? Number(t.interruptDate) : undefined,
+            })),
+            config: {
+              workTime: settings.workTime,
+              shortBreakTime: settings.shortBreakTime,
+              longBreakTime: settings.longBreakTime,
+            },
+          },
+        });
+      } catch {
+        // API indisponível, mantém estado local
+        console.warn('API indisponível, usando estado local.');
+      }
+    }
+
+    hydrate();
+  }, []);
+
+  // Sincroniza conclusão de tarefa com a API
+  useEffect(() => {
+    const lastTask = state.tasks.at(-1);
+    if (lastTask?.completeDate && lastTask.id) {
+      completeTask(lastTask.id, lastTask.completeDate).catch(() => {});
+    }
+  }, [state.tasks]);
 
   useEffect(() => {
     worker.onmessage(e => {
@@ -40,9 +78,7 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
           playBeepRef.current();
           playBeepRef.current = null;
         }
-        dispatch({
-          type: TaskActionTypes.COMPLETE_TASK,
-        });
+        dispatch({ type: TaskActionTypes.COMPLETE_TASK });
         worker.terminate();
       } else {
         dispatch({

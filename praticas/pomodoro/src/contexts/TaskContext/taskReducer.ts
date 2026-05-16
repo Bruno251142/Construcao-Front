@@ -66,8 +66,20 @@ export function taskReducer(
     case TaskActionTypes.CHANGE_SETTINGS: {
       return { ...state, config: { ...action.payload } };
     }
+    case TaskActionTypes.CLEAR_TASKS: {
+      return {
+        ...state,
+        tasks: [],
+      };
+    }
+    case TaskActionTypes.HYDRATE_TASKS: {
+      return {
+        ...state,
+        tasks: action.payload.tasks,
+        config: action.payload.config,
+      };
+    }
   }
 
-  // Sempre deve retornar o estado
   return state;
 }

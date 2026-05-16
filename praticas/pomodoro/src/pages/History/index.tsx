@@ -12,6 +12,7 @@ import { sortTasks, type SortTasksOptions } from '../../utils/sortTasks';
 import { useEffect, useState } from 'react';
 import { TaskActionTypes } from '../../contexts/TaskContext/taskActions';
 import { showMessage } from '../../adapters/showMessage';
+import { clearTasks } from '../../services/api';
 
 export function History() {
   const { state, dispatch } = useTaskContext();
@@ -48,7 +49,16 @@ export function History() {
 
     setConfirmClearHistory(false);
 
-    dispatch({ type: TaskActionTypes.RESET_STATE });
+    async function handleClear() {
+      try {
+        await clearTasks();
+      } catch {
+        console.warn('Erro ao limpar histórico na API.');
+      }
+      dispatch({ type: TaskActionTypes.CLEAR_TASKS });
+    }
+
+    handleClear();
   }, [confirmClearHistory, dispatch]);
 
   useEffect(() => {
