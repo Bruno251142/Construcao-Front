@@ -10,30 +10,68 @@ export function AuthContextProvider({
   children,
 }: AuthContextProviderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-  const storageAuth = sessionStorage.getItem('isAuthenticated');
+    const storageAuth = sessionStorage.getItem(
+      'isAuthenticated',
+    );
 
-  return storageAuth === 'true';
-});
+    return storageAuth === 'true';
+  });
 
-  function login(username: string, password: string) {
-    const mockUser = '25114290088';
-    const mockPassword = '20042004';
+  async function login(
+    email: string,
+    password: string,
+  ) {
+    try {
+      const response = await fetch(
+        'http://localhost:3333/auth/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        },
+      );
 
-    if (username === mockUser && password === mockPassword) {
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = await response.json();
+
       setIsAuthenticated(true);
-      sessionStorage.setItem('isAuthenticated', 'true');
+
+      sessionStorage.setItem(
+        'isAuthenticated',
+        'true',
+      );
+
+      sessionStorage.setItem('token', data.token);
+
+      sessionStorage.setItem(
+        'user',
+        JSON.stringify(data.user),
+      );
 
       return true;
+    } catch {
+      return false;
     }
-
-    return false;
   }
 
- function logout() {
-  setIsAuthenticated(false);
+  function logout() {
+    setIsAuthenticated(false);
 
-  sessionStorage.removeItem('isAuthenticated');
-}
+    sessionStorage.removeItem('isAuthenticated');
+
+    sessionStorage.removeItem('token');
+
+    sessionStorage.removeItem('user');
+  }
+
   return (
     <AuthContext.Provider
       value={{

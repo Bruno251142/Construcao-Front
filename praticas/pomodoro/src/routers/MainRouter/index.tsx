@@ -7,6 +7,8 @@ import { History } from '../../pages/History';
 import { Settings } from '../../pages/Settings';
 import { Login } from '../../pages/Login';
 import { ProtectedRoute } from '../ProtectedRoute';
+import { Register } from '../../pages/Register';
+import { ForgotPassword } from '../../pages/ForgotPassword';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -23,6 +25,10 @@ export function MainRouter() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Login />} />
+        <Route
+          path='/register/'
+          element={<Register />}
+        />
        <Route
   path='/home/'
   element={
@@ -39,6 +45,10 @@ export function MainRouter() {
       <History />
     </ProtectedRoute>
   }
+/>
+<Route
+  path='/forgot-password/'
+  element={<ForgotPassword />}
 />
 
 <Route

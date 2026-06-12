@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { settingsRouter } from './routes/settings.routes'
 import { tasksRouter } from './routes/tasks.routes'
+import { authRoutes } from './routes/auth.routes'
 
 export const app = express()
 
@@ -11,3 +12,4 @@ app.use(express.json())
 app.get('/health', (_req, res) => res.json({ ok: true }))
 app.use('/settings', settingsRouter)
 app.use('/tasks', tasksRouter)
+app.use('/auth', authRoutes)

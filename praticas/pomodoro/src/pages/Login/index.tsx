@@ -14,10 +14,39 @@ export function Login() {
 
   const { login } = useContext(AuthContext);
 
-  function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+  async function handleLogin(
+    event: React.FormEvent<HTMLFormElement>,
+  ) {
     event.preventDefault();
 
-    const isValidLogin = login(username, password);
+    if (!username && !password) {
+      setMessage(
+        'Preencha o usuário e a senha',
+      );
+
+      return;
+    }
+
+    if (!username) {
+      setMessage(
+        'Preencha o usuário',
+      );
+
+      return;
+    }
+
+    if (!password) {
+      setMessage(
+        'Preencha a senha',
+      );
+
+      return;
+    }
+
+    const isValidLogin = await login(
+      username,
+      password,
+    );
 
     if (isValidLogin) {
       setMessage('Login realizado com sucesso!');
@@ -31,12 +60,12 @@ export function Login() {
   }
 
   function handleRegister() {
-    setMessage('Fluxo de cadastro ainda será implementado');
-  }
+  navigate('/register/');
+}
 
   function handleForgotPassword() {
-    setMessage('Fluxo de recuperação de senha ainda será implementado');
-  }
+  navigate('/forgot-password/');
+}
 
   return (
     <div className={styles.loginContainer}>
@@ -45,7 +74,10 @@ export function Login() {
 
         <h2>Login</h2>
 
-        <form onSubmit={handleLogin} className={styles.form}>
+        <form
+          onSubmit={handleLogin}
+          className={styles.form}
+        >
           <div className={styles.inputGroup}>
             <label htmlFor='username'>Usuário</label>
 
@@ -53,7 +85,9 @@ export function Login() {
               id='username'
               type='text'
               value={username}
-              onChange={event => setUsername(event.target.value)}
+              onChange={event =>
+                setUsername(event.target.value)
+              }
               placeholder='Digite seu usuário'
             />
           </div>
@@ -65,24 +99,37 @@ export function Login() {
               id='password'
               type='password'
               value={password}
-              onChange={event => setPassword(event.target.value)}
+              onChange={event =>
+                setPassword(event.target.value)
+              }
               placeholder='Digite sua senha'
             />
           </div>
 
-          <button type='submit' className={styles.loginButton}>
+          <button
+            type='submit'
+            className={styles.loginButton}
+          >
             Entrar
           </button>
         </form>
 
-        {message && <p className={styles.message}>{message}</p>}
+        {message && (
+          <p className={styles.message}>{message}</p>
+        )}
 
         <div className={styles.actions}>
-          <button type='button' onClick={handleRegister}>
+          <button
+            type='button'
+            onClick={handleRegister}
+          >
             Não tem conta? Cadastre-se
           </button>
 
-          <button type='button' onClick={handleForgotPassword}>
+          <button
+            type='button'
+            onClick={handleForgotPassword}
+          >
             Esqueci minha senha
           </button>
         </div>

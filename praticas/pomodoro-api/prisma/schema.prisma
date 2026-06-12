@@ -7,11 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  tasks      Task[]
+  settings   Settings[]
+}
+
 model Settings {
   id             Int @id @default(autoincrement())
   workTime       Int @default(25)
   shortBreakTime Int @default(5)
   longBreakTime  Int @default(15)
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 }
 
 model Task {
@@ -22,4 +36,7 @@ model Task {
   startDate     BigInt
   completeDate  BigInt?
   interruptDate BigInt?
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 }
